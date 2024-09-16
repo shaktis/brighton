@@ -16,9 +16,10 @@ class StoreServiceException(Exception):
 
 class StoreService:
     """
-    Service façade for stores
+    Service façade for stores related operations
     """
-    STORES_LIST_URL = os.environ.get('STORES_LIST_URL')
+    STORES_LIST_URL = os.getenv('STORES_LIST_URL')
+    DEFAULT_STORES_LIST_URL = "https://feeds.brightoncollectibles.com/get?feed=bristore"
 
     @classmethod
     def download_stores_list(cls) -> None:
@@ -26,14 +27,16 @@ class StoreService:
         download list of stores (json) from API
         :return:
         """
+        feed_url = cls.STORES_LIST_URL
         request_timeout = 5
-        if not cls.STORES_LIST_URL:
-            raise StoreServiceException(
-                "Please configure env variable STORES_LIST_URL in .env file located in the root folder.")
-        logger.info(f"Downloading stores list from url: {cls.STORES_LIST_URL}")
+        if not feed_url:
+            logger.warning(
+                f"Env variable `STORES_LIST_URL` not set. Defaulting to {cls.DEFAULT_STORES_LIST_URL}")
+            feed_url = cls.DEFAULT_STORES_LIST_URL
+        logger.info(f"Downloading stores list from url: {feed_url}")
         try:
             start = time.time()
-            r = requests.get(cls.STORES_LIST_URL, timeout=request_timeout)
+            r = requests.get(feed_url, timeout=request_timeout)
             logger.debug(f"HTTP request for stores list completed in {time.time() - start:.2f}s")
             r.raise_for_status()
             if r.status_code == 200:
@@ -53,8 +56,9 @@ class StoreService:
     @classmethod
     def get_stores(cls, force_download=False) -> List[Dict]:
         """
-        return list of stores downloading the stores if required
-        :param force_download:
+        return list of stores, downloading the list from the API if required. Once the list is downloaded, it is stored
+        to disk and re-used unless force_download is set to `True`
+        :param force_download: set to True to force download of stores list from API
         :return:
         """
         current_dir = os.path.dirname(__file__)
@@ -70,6 +74,13 @@ class StoreService:
 
     @classmethod
     def create_stores_list_html_view(cls, recreate_view_file=False):
+        """
+        Create a static HTML view for stores list as required by the challenge. The created is re-used ubkess the
+        parameter `recreate_view_file` is set to `True`
+        :param recreate_view_file: set to True to re-download stores list and re-create HTML view file even if it
+        already exists.
+        :return:
+        """
         current_dir = os.path.dirname(__file__)
         view_file = os.path.join(current_dir, 'stores.html')
         if os.path.exists(view_file) and not recreate_view_file:
@@ -87,6 +98,10 @@ class StoreService:
 
     @classmethod
     def get_store_count_by_state(cls) -> Dict[str, int]:
+        """
+        Return a dict of state codes (key) and the count of stores (value) in that state ordered by the state code.
+        :return:
+        """
         result = dict()
         stores = cls.get_stores()
         for store in stores:
@@ -95,11 +110,15 @@ class StoreService:
                 continue
             count: int = result.setdefault(store_state, 0)
             result[store_state] = count + 1
-            # sort dict by keys (state)
+        # sort dict by keys (state)
         return dict(sorted(result.items()))
 
     @classmethod
     def print_store_count_by_state(cls):
+        """
+        Prints the store counts ordered by state to stdout
+        :return:
+        """
         print("Store counts sorted by state code")
         for state, ct in cls.get_store_count_by_state().items():
             print(state, ' ==> ', ct)

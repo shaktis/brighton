@@ -11,17 +11,30 @@ blueprint = Blueprint('stores', __name__, template_folder='templates')
 
 @blueprint.route("/")
 def homepage() -> str:
-    return render_template("home.html", feed_url=os.environ.get('STORES_LIST_URL'))
+    """
+    Homepage view
+    :return:
+    """
+    return render_template("home.html", feed_url=os.getenv('STORES_LIST_URL'))
 
 
 @blueprint.route("/stores")
 def stores_list() -> str:
+    """
+    View to re-download list of stores and display them as requested by the challenge
+    :return:
+    """
     stores = StoreService.get_stores(True)
     return render_template("stores.html", stores=stores)
 
 
 @blueprint.route('/stores.html')
 def stores_html_view() -> Response:
+    """
+    View to display list of stores as requested by the challenge. Pass url param ?force=1 to re-download stores list and
+    recreate the view
+    :return:
+    """
     current_dir = os.path.dirname(__file__)
     force_download = request.args.get('force', '') == '1'
     # if file does not exist or user requests forced re-creation, create it
