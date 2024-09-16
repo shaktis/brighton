@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<!--suppress HtmlUnknownTarget -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brighton Stores</title>
+    <style>
+        /* General layout for the container */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 10px;
+        }
+
+        /* Styling each grid item */
+        .grid-item {
+            text-align: center;
+            padding: 10px;
+            background-color: #f2f2f2;
+            border-radius: 8px;
+        }
+
+        .grid-item img {
+            width: auto;
+            height: auto;
+            max-width: 150px;
+            max-height: 150px;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .grid-item p {
+            margin-top: 10px;
+            font-size: 1rem;
+            color: #333;
+        }
+
+        /* screens >= 768px */
+        @media (min-width: 768px) {
+            .grid {
+                grid-template-columns: repeat(6, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="grid">
+    {% for store in stores %}
+    <div class="grid-item">
+        <img src="{{ store['mainImageUrl'] }}" alt="{{ store['name'] }} {{ store['name2'] }}">
+        <p>{{ store['name'] }} {{ store['name2'] }}</p>
+    </div>
+    {% endfor %}
+</div>
+
+</body>
+</html>

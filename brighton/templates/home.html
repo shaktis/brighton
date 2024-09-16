@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<!--suppress HtmlUnknownTarget -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brighton Tech Challenge</title>
+</head>
+<body>
+
+Store feed URL: {{ feed_url }} <br />
+Generated stores list (HTML): <a href="{{ url_for('stores.stores_html_view') }}">link</a> <br />
+Re-generate stores list (HTML): <a href="{{ url_for('stores.stores_list') }}">link</a> <br />
+</body>
+</html>
