@@ -7,17 +7,17 @@
        git clone git@github.com:shaktis/brighton.git
        cd brighton
     ```
-3. Create a `.env` file with feed URL.  
+3. Create a `.env` file with feed URL. You can use the existing .env.example for getting started.
     ```shell
        cp .env.example .env
     ```
 4. Build and launch the app and tail logs 
     ```shell
-       docker compose build --no-cache && docker compose up -d && docker logs -f --tail 10 brighton-app-1 
+       docker compose build && docker compose up -d && docker logs -f --tail 10 brighton-app-1 
     ```
 5. The application logs will display store counts by state as well as create a static HTML file as required by the tech challenge. See screenshots below.
    <img src="docs/images/app_logs_1.png" style="width:600px;"/>
-   <img src="docs/images/app_logs_1.png" style="width:600px;"/>
+   <img src="docs/images/app_logs_2.png" style="width:600px;"/>
 6. Navigate to http://127.0.0.1:5000 in your browser to view the home page as shown in the image below. The first link goes to the static HTML file created at server start and the second link will re-download and recreate the static HTML file
    <img src="docs/images/homepage.png" style="width:600px;"/>
    
